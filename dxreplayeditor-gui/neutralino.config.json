@@ -1,0 +1,63 @@
+{
+  "applicationId": "js.neutralino.zero",
+  "version": "1.0.0",
+  "defaultMode": "window",
+  "documentRoot": "/www/",
+  "url": "/",
+  "enableServer": true,
+  "enableNativeAPI": true,
+  "nativeAllowList": [
+    "app.*",
+    "os.*",
+    "filesystem.*",
+    "window.*",
+    "clipboard.readText",
+    "computer.*"
+  ],
+  "logging": {
+    "enabled": true,
+    "writeToLogFile": false
+  },
+  "modes": {
+    "window": {
+      "title": "DX Replay Editor",
+      "width": 800,
+      "height": 950,
+      "minWidth": 800,
+      "minHeight": 950,
+      "icon": "/icon.png",
+      "useSavedState": false
+    }
+  },
+  "cli": {
+    "binaryName": "dxreplayeditor",
+    "resourcesPath": "/www/",
+    "extensionsPath": "/extensions/",
+    "clientLibrary": "/www/neutralino.js",
+    "binaryVersion": "6.2.0",
+    "clientVersion": "6.2.0",
+    "command": "node index.js"
+  },
+  "buildScript": {
+    "mac": {
+      "architecture": ["x64", "arm64", "universal"],
+      "minimumOS": "10.13.0",
+      "appName": "DXReplayEditor",
+      "appBundleName": "DXReplayEditor",
+      "appIdentifier": "li.edward.dxreplayeditor",
+      "appIcon": "icon.icns"
+    },
+    "win": {
+      "architecture": ["x64"],
+      "appName": "DXReplayEditor",
+      "appIcon": "icon.ico"
+    },
+    "linux": {
+      "architecture": ["x64", "arm64", "armhf"],
+      "appName": "DXReplayEditor",
+      "appIcon": "icon.png",
+      "appPath": "/usr/share/dxreplayeditor",
+      "appIconLocation": "/usr/share/dxreplayeditor/icon.png"
+    }
+  }
+}

@@ -1,0 +1,131 @@
+body {
+  font-family: sans-serif;
+  margin: 20px;
+}
+
+#controls {
+  margin-bottom: 20px;
+}
+
+#controls button,
+#controls input[type="text"] {
+  padding: 10px 20px;
+  font-size: 16px;
+  width: 220px;
+  box-sizing: border-box;
+}
+
+#battleId {
+  margin-bottom: 10px;
+}
+
+#main {
+  display: flex;
+  gap: 20px;
+}
+
+#rounds,
+#frames {
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+#rounds {
+  width: 200px;
+  flex-shrink: 0;
+}
+
+#frames {
+  flex-grow: 1;
+}
+
+#frames h2 {
+  display: flex;
+  align-items: baseline;
+}
+
+.header-controls {
+  margin-left: auto;
+}
+
+#frameData {
+  font-family: monospace;
+  white-space: pre;
+  overflow-y: auto;
+  max-height: 400px;
+}
+
+#edit {
+  margin-top: 20px;
+}
+
+.highlighted {
+  background-color: #bde8f6;
+}
+
+.edited td {
+  border-top: 1px solid red;
+  border-bottom: 1px solid red;
+}
+
+.edited td:first-child {
+  border-left: 1px solid red;
+}
+
+.edited td:last-child {
+  border-right: 1px solid red;
+}
+
+#replayInfo p {
+  font-size: 14px;
+  line-height: 1.3;
+  margin: 0.5em 0;
+}
+
+#playerSelect {
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+#roundList {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+#roundList li {
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 3px;
+}
+
+#roundList li.highlighted {
+  background-color: #bde8f6;
+}
+
+#keyButtons {
+  margin-top: 10px;
+}
+
+.key-btn {
+  padding: 5px 10px;
+  font-size: 14px;
+  margin-right: 5px;
+}
+
+#markGameStart,
+#replay {
+  font-size: 12px;
+  padding: 5px 5px;
+}
+
+#countdown {
+  font-size: 14px;
+  margin-left: 10px;
+}
+
+.game-start {
+  font-weight: bold;
+  color: green;
+}

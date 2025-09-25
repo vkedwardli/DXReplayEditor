@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>DX Replay Editor</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="controls">
+      <input type="text" id="battleId" placeholder="Enter Battle ID" /><br />
+      <button id="loadFromUrl">Load from BattleCode</button>
+      <button id="loadFile">Load from Local File</button>
+      <button id="saveFile" disabled>Save Replay</button>
+    </div>
+    <div id="replayInfo" style="display: none">
+      <p>BattleCode: <span id="battleCode"></span></p>
+      <p>Number of Players: <span id="numPlayers"></span></p>
+      <p>Start At: <span id="startAt"></span></p>
+      <p>End At: <span id="endAt"></span></p>
+    </div>
+    <select id="playerSelect" style="display: none"></select>
+    <div id="main" style="display: none">
+      <div id="rounds">
+        <h2>Rounds</h2>
+        <ul id="roundList"></ul>
+      </div>
+      <div id="frames">
+        <h2>
+          Frames
+          <div class="header-controls">
+            <span id="countdown"></span>
+            <button id="markGameStart" disabled>Mark Game Start ⏳</button>
+            <button id="replay" disabled>Replay ▶️</button>
+          </div>
+        </h2>
+        <div id="frameData"></div>
+      </div>
+    </div>
+    <div id="edit" style="display: none">
+      <h2>Edit Frames</h2>
+      <input type="text" id="frameRange" placeholder="e.g., 100-200" />
+      <input type="text" id="key" placeholder="e.g., X" />
+      <button id="addKey">Add</button>
+      <button id="removeKey">Remove</button>
+      <div id="keyButtons">
+        <button class="key-btn">↑</button>
+        <button class="key-btn">↓</button>
+        <button class="key-btn">←</button>
+        <button class="key-btn">→</button>
+        <button class="key-btn">A</button>
+        <button class="key-btn">B</button>
+        <button class="key-btn">X</button>
+        <button class="key-btn">Y</button>
+        <button class="key-btn">S</button>
+        <button class="key-btn">R</button>
+        <button class="key-btn">L</button>
+      </div>
+    </div>
+
+    <script src="long.js"></script>
+    <script src="protobuf.js"></script>
+    <script src="neutralino.js"></script>
+    <script src="main.js"></script>
+  </body>
+</html>
