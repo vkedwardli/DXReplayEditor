@@ -104,6 +104,11 @@ body {
   background-color: #bde8f6;
 }
 
+#roundList li.locked {
+  color: #ccc;
+  cursor: not-allowed;
+}
+
 #keyButtons {
   margin-top: 10px;
 }

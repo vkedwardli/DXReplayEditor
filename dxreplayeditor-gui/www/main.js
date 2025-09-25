@@ -98,6 +98,7 @@ Neutralino.events.on("ready", async () => {
   let selectedRoundIndex = -1;
   let editedFrames = [];
   let gameStartFrames = {};
+  let isEditing = false;
 
   function getGroupedFrames(p, round) {
     const groups = [];
@@ -239,6 +240,7 @@ Neutralino.events.on("ready", async () => {
 
   async function updateUiWithLoadedFile(filePath, loadedRounds) {
     rounds = loadedRounds;
+    isEditing = false;
 
     // Populate replay info
     document.getElementById("replayInfo").style.display = "block";
@@ -370,12 +372,18 @@ Neutralino.events.on("ready", async () => {
       if (index === selectedRoundIndex) {
         li.classList.add("highlighted");
       }
-      li.addEventListener("click", () => {
-        selectedRoundIndex = index;
-        frameRangeInput.value = "0-0";
-        renderFrames();
-        renderRounds();
-      });
+
+      if (isEditing && index !== selectedRoundIndex) {
+        li.classList.add("locked");
+      } else {
+        li.addEventListener("click", () => {
+          if (isEditing) return;
+          selectedRoundIndex = index;
+          frameRangeInput.value = "0-0";
+          renderFrames();
+          renderRounds();
+        });
+      }
       roundList.appendChild(li);
     });
   }
@@ -687,6 +695,7 @@ Neutralino.events.on("ready", async () => {
       selectedRoundIndex
     );
     saveFileBtn.disabled = false;
+    isEditing = true;
     editedFrames.push({
       start: startFrame,
       end: endFrame,
@@ -694,6 +703,7 @@ Neutralino.events.on("ready", async () => {
       roundIndex: selectedRoundIndex,
     });
     renderFrames(true);
+    renderRounds();
     updateHighlights();
   }
 
