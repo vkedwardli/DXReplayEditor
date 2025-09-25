@@ -736,6 +736,7 @@ Neutralino.events.on("ready", async () => {
     const targetRound = selectedRoundIndex + 1;
     const [startFrameStr] = frameRangeInput.value.split("-");
     const targetFrame = parseInt(startFrameStr, 10);
+    const targetPOV = parseInt(playerSelect.value, 10);
 
     if (isNaN(targetFrame)) {
       Neutralino.os.showMessageBox("Error", "Invalid frame selection.");
@@ -747,7 +748,8 @@ Neutralino.events.on("ready", async () => {
       `"/Users/edwardli/Flycast/Mobile Suit Gundam - Federation vs. Zeon DX/Mobile Suit Gundam - Federation vs. Zeon DX.cue" ` +
       `-config gdxsv:replay="${tempFilepath}" ` +
       `-config gdxsv:replay_target_round=${targetRound} ` +
-      `-config gdxsv:replay_target_frame=${targetFrame}`;
+      `-config gdxsv:replay_target_frame=${targetFrame} ` +
+      `-config gdxsv:ReplayPOV=${targetPOV}`;
 
     try {
       await Neutralino.os.execCommand(command);
