@@ -202,11 +202,39 @@ Neutralino.events.on("ready", async () => {
     }
   }
 
+  function prepareSaveData() {
+    if (isEditing) {
+      const lastRound = rounds[selectedRoundIndex];
+      const lastFrame = lastRound.end;
+
+      // Truncate rounds array
+      rounds.splice(selectedRoundIndex + 1);
+
+      // Truncate inputs array
+      if (battleLogObject.inputs.length > lastFrame + 1) {
+        battleLogObject.inputs.length = lastFrame + 1;
+      }
+
+      // Truncate startMsgIndexes array
+      if (battleLogObject.startMsgIndexes.length > selectedRoundIndex + 1) {
+        battleLogObject.startMsgIndexes.length = selectedRoundIndex + 1;
+      }
+    }
+    return BattleLogFile.encode(battleLogObject).finish();
+  }
+
   async function saveFile(newFilename) {
     try {
-      const newBuffer = BattleLogFile.encode(battleLogObject).finish();
+      const newBuffer = prepareSaveData();
       await Neutralino.filesystem.writeBinaryFile(newFilename, newBuffer);
       Neutralino.os.showMessageBox("Success", "File saved successfully!");
+
+      if (isEditing) {
+        isEditing = false;
+        editedFrames = [];
+        saveFileBtn.disabled = true;
+        renderRounds();
+      }
     } catch (err) {
       Neutralino.os.showMessageBox(
         "Error",
@@ -228,6 +256,56 @@ Neutralino.events.on("ready", async () => {
   const battleIdInput = document.getElementById("battleId");
   const loadFromUrlBtn = document.getElementById("loadFromUrl");
   const markGameStartBtn = document.getElementById("markGameStart");
+  const selectFlycastPathBtn = document.getElementById("selectFlycastPath");
+  const selectRomPathBtn = document.getElementById("selectRomPath");
+  const loading = document.getElementById("loading");
+
+  const flycastBtnText = "Select Flycast Path";
+  const romBtnText = "Select ROM Path";
+
+  let flycastPath = "";
+  let romPath = "";
+
+  async function loadStoredPaths() {
+    try {
+      const storedFlycastPath = await Neutralino.storage.getData("flycastPath");
+      if (storedFlycastPath && storedFlycastPath.length > 0) {
+        flycastPath = storedFlycastPath;
+        selectFlycastPathBtn.textContent = flycastBtnText + " ✅";
+      }
+    } catch (err) {
+      console.error("Error loading flycastPath:", err);
+    }
+    try {
+      const storedRomPath = await Neutralino.storage.getData("romPath");
+      if (storedRomPath && storedRomPath.length > 0) {
+        romPath = storedRomPath;
+        selectRomPathBtn.textContent = romBtnText + " ✅";
+      }
+    } catch (err) {
+      console.error("Error loading romPath:", err);
+    }
+  }
+
+  loadStoredPaths();
+
+  selectFlycastPathBtn.addEventListener("click", async () => {
+    let entry = await Neutralino.os.showOpenDialog("Select Flycast executable");
+    if (entry.length > 0) {
+      flycastPath = entry[0];
+      selectFlycastPathBtn.textContent = flycastBtnText + " ✅";
+      await Neutralino.storage.setData("flycastPath", flycastPath);
+    }
+  });
+
+  selectRomPathBtn.addEventListener("click", async () => {
+    let entry = await Neutralino.os.showOpenDialog("Select game ROM");
+    if (entry.length > 0) {
+      romPath = entry[0];
+      selectRomPathBtn.textContent = romBtnText + " ✅";
+      await Neutralino.storage.setData("romPath", romPath);
+    }
+  });
 
   markGameStartBtn.addEventListener("click", () => {
     const [startFrameStr] = frameRangeInput.value.split("-");
@@ -373,17 +451,22 @@ Neutralino.events.on("ready", async () => {
         li.classList.add("highlighted");
       }
 
-      if (isEditing && index !== selectedRoundIndex) {
-        li.classList.add("locked");
-      } else {
-        li.addEventListener("click", () => {
-          if (isEditing) return;
-          selectedRoundIndex = index;
-          frameRangeInput.value = "0-0";
-          renderFrames();
-          renderRounds();
-        });
+      if (isEditing) {
+        if (index > selectedRoundIndex) {
+          li.classList.add("truncated");
+        }
+        if (index !== selectedRoundIndex) {
+          li.classList.add("locked");
+        }
       }
+
+      li.addEventListener("click", () => {
+        if (isEditing) return;
+        selectedRoundIndex = index;
+        frameRangeInput.value = "0-0";
+        renderFrames();
+        renderRounds();
+      });
       roundList.appendChild(li);
     });
   }
@@ -725,7 +808,7 @@ Neutralino.events.on("ready", async () => {
       const tempDir = await Neutralino.os.getPath("temp");
       const tempFilename = `replay-temp-${Date.now()}.pb`;
       const tempFilepath = `${tempDir}/${tempFilename}`;
-      const newBuffer = BattleLogFile.encode(battleLogObject).finish();
+      const newBuffer = prepareSaveData();
       await Neutralino.filesystem.writeBinaryFile(tempFilepath, newBuffer);
       return tempFilepath;
     } catch (err) {
@@ -738,6 +821,14 @@ Neutralino.events.on("ready", async () => {
   }
 
   replayBtn.addEventListener("click", async () => {
+    if (!flycastPath || !romPath) {
+      Neutralino.os.showMessageBox(
+        "Error",
+        "Please select the Flycast path and game ROM path first."
+      );
+      return;
+    }
+
     const tempFilepath = await saveTempReplayFile();
     if (!tempFilepath) {
       return;
@@ -753,13 +844,21 @@ Neutralino.events.on("ready", async () => {
       return;
     }
 
-    const command =
-      `open /Users/edwardli/Development/flycast/build/Release/Flycast.app --args ` +
-      `"/Users/edwardli/Flycast/Mobile Suit Gundam - Federation vs. Zeon DX/Mobile Suit Gundam - Federation vs. Zeon DX.cue" ` +
-      `-config gdxsv:replay="${tempFilepath}" ` +
-      `-config gdxsv:replay_target_round=${targetRound} ` +
-      `-config gdxsv:replay_target_frame=${targetFrame} ` +
-      `-config gdxsv:ReplayPOV=${targetPOV}`;
+    let command;
+    const args = [
+      `"${romPath}"`,
+      `-config gdxsv:replay="${tempFilepath}"`,
+      `-config gdxsv:replay_target_round=${targetRound}`,
+      `-config gdxsv:replay_target_frame=${targetFrame}`,
+      `-config gdxsv:ReplayPOV=${targetPOV}`,
+    ].join(" ");
+
+    if (NL_OS === "Windows") {
+      command = `"${flycastPath}" ${args}`;
+    } else {
+      // macOS and Linux
+      command = `open "${flycastPath}" --args ${args}`;
+    }
 
     try {
       await Neutralino.os.execCommand(command);

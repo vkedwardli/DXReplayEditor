@@ -1,5 +1,5 @@
 {
-  "applicationId": "js.neutralino.zero",
+  "applicationId": "li.edward.dxreplayeditor",
   "version": "1.0.0",
   "defaultMode": "window",
   "documentRoot": "/www/",
@@ -12,19 +12,21 @@
     "filesystem.*",
     "window.*",
     "clipboard.readText",
-    "computer.*"
+    "computer.*",
+    "storage.*"
   ],
   "logging": {
-    "enabled": true,
+    "enabled": false,
     "writeToLogFile": false
   },
+  "storageLocation": "system",
   "modes": {
     "window": {
       "title": "DX Replay Editor",
       "width": 800,
-      "height": 950,
+      "height": 1000,
       "minWidth": 800,
-      "minHeight": 950,
+      "minHeight": 1000,
       "icon": "/icon.png",
       "useSavedState": false
     }
