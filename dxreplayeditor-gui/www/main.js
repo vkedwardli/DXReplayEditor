@@ -410,12 +410,20 @@ Neutralino.events.on("ready", async () => {
     }
   });
 
+  battleIdInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      loadFromUrlBtn.click();
+    }
+  });
+
   loadFromUrlBtn.addEventListener("click", async () => {
     const battleId = battleIdInput.value;
     if (!battleId) {
       Neutralino.os.showMessageBox("Error", "Please enter a Battle ID.");
       return;
     }
+
+    loading.style.display = "flex";
 
     const url = `https://storage.googleapis.com/gdxsv/replays/${battleId}.pb`;
     const tempDir = await Neutralino.os.getPath("temp");
@@ -439,6 +447,8 @@ Neutralino.events.on("ready", async () => {
         "Error",
         `Failed to download or load file: ${err.message}`
       );
+    } finally {
+      loading.style.display = "none";
     }
   });
 
